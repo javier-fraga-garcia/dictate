@@ -13,3 +13,6 @@ fix:
 
 run: 
 	uv run src/main.py
+
+signal:
+	kill -10 $$(pgrep -f "main.py" | head -n 1)
