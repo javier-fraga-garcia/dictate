@@ -36,3 +36,7 @@ class Controller:
         if self.recording_event.is_set():
             self.recording_event.clear()
         self.shutdown_event.set()
+
+    async def wait_for_audio_thread(self):
+        if self.audio_thread:
+            await asyncio.to_thread(self.audio_thread.join)

@@ -29,7 +29,13 @@ async def main():
     print("Esperando señales...")
 
     await shutdown_event.wait()
-
+    await controller.wait_for_audio_thread()
+    consumer_task.cancel()
+    try:
+        await consumer_task
+    except asyncio.CancelledError:
+        pass
+    
     print("Limpieza finalizada, cerrando programa")
 
 
