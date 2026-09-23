@@ -5,16 +5,21 @@ import signal
 
 from producer import Producer
 from controller import Controller
+from consumer import Consumer
 
 
 async def main():
     loop = asyncio.get_event_loop()
     shutdown_event = asyncio.Event()
     recording_event = threading.Event()
-    queue = asyncio.Queue(maxsize=100)
+    audio_queue = asyncio.Queue(maxsize=100)
+    text_queue = asyncio.Queue(maxsize=100)
     producer = Producer()
+    consumer = Consumer()
 
-    controller = Controller(loop, queue, recording_event, shutdown_event, producer)
+    controller = Controller(loop, audio_queue, recording_event, shutdown_event, producer)
+
+    consumer_task = asyncio.create_task(consumer.consume(audio_queue=audio_queue, text_queue=text_queue))
 
     loop.add_signal_handler(signal.SIGUSR1, controller.toggle_recording)
     loop.add_signal_handler(signal.SIGTERM, controller.exit_gracefully)
