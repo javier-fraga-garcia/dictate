@@ -23,3 +23,5 @@ class Producer:
                     loop.call_soon_threadsafe(queue.put_nowait, chunk)
         except Exception as e:
             print(f"Error de hardware: {e}")
+        finally:
+            loop.call_soon_threadsafe(queue.put_nowait, None)
