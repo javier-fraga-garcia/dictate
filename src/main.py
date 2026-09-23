@@ -6,6 +6,7 @@ import signal
 from producer import Producer
 from controller import Controller
 from consumer import Consumer
+from printer import Printer
 
 
 async def main():
@@ -15,11 +16,11 @@ async def main():
     audio_queue = asyncio.Queue(maxsize=100)
     text_queue = asyncio.Queue(maxsize=100)
     producer = Producer()
-    consumer = Consumer()
 
     controller = Controller(loop, audio_queue, recording_event, shutdown_event, producer)
 
-    consumer_task = asyncio.create_task(consumer.consume(audio_queue=audio_queue, text_queue=text_queue))
+    consumer_task = asyncio.create_task(Consumer.consume(audio_queue=audio_queue, text_queue=text_queue))
+    printer_task = asyncio.create_task(Printer.print(text_queue=text_queue))
 
     loop.add_signal_handler(signal.SIGUSR1, controller.toggle_recording)
     loop.add_signal_handler(signal.SIGTERM, controller.exit_gracefully)
@@ -31,11 +32,12 @@ async def main():
     await shutdown_event.wait()
     await controller.wait_for_audio_thread()
     consumer_task.cancel()
+    printer_task.cancel()
     try:
-        await consumer_task
+        await asyncio.gather(consumer_task, printer_task)
     except asyncio.CancelledError:
         pass
-    
+
     print("Limpieza finalizada, cerrando programa")
 
 
