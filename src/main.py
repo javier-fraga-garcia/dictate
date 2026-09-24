@@ -17,9 +17,13 @@ async def main():
     text_queue = asyncio.Queue(maxsize=100)
     producer = Producer()
 
-    controller = Controller(loop, audio_queue, recording_event, shutdown_event, producer)
+    controller = Controller(
+        loop, audio_queue, recording_event, shutdown_event, producer
+    )
 
-    consumer_task = asyncio.create_task(Consumer.consume(audio_queue=audio_queue, text_queue=text_queue))
+    consumer_task = asyncio.create_task(
+        Consumer.consume(audio_queue=audio_queue, text_queue=text_queue)
+    )
     printer_task = asyncio.create_task(Printer.print(text_queue=text_queue))
 
     loop.add_signal_handler(signal.SIGUSR1, controller.toggle_recording)

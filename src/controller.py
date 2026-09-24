@@ -26,7 +26,10 @@ class Controller:
         if self.recording_event.is_set():
             print("Grabando...")
             if not self.audio_thread or not self.audio_thread.is_alive():
-                self.audio_thread = threading.Thread(target=self.producer.produce, args=(self.recording_event, self.audio_queue, self.loop))
+                self.audio_thread = threading.Thread(
+                    target=self.producer.produce,
+                    args=(self.recording_event, self.audio_queue, self.loop),
+                )
                 self.audio_thread.start()
         else:
             print("Grabación pausada...")

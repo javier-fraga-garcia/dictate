@@ -1,5 +1,6 @@
 import asyncio
 
+
 class Printer:
     @staticmethod
     async def print(text_queue: asyncio.Queue):

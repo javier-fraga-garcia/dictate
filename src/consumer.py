@@ -1,7 +1,7 @@
 import asyncio
 
-class Consumer:
 
+class Consumer:
     @staticmethod
     async def consume(audio_queue: asyncio.Queue, text_queue: asyncio.Queue):
         while True:
