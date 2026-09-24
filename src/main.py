@@ -4,6 +4,7 @@ import threading
 import signal
 
 from producer import Producer
+from transcriber import Transcriber
 from controller import Controller
 from consumer import Consumer
 from printer import Printer
@@ -16,14 +17,16 @@ async def main():
     audio_queue = asyncio.Queue(maxsize=100)
     text_queue = asyncio.Queue(maxsize=100)
     producer = Producer()
+    transcriber = Transcriber()
+    consumer = Consumer(
+        transcriber=transcriber, audio_queue=audio_queue, text_queue=text_queue
+    )
 
     controller = Controller(
         loop, audio_queue, recording_event, shutdown_event, producer
     )
 
-    consumer_task = asyncio.create_task(
-        Consumer.consume(audio_queue=audio_queue, text_queue=text_queue)
-    )
+    consumer_task = asyncio.create_task(consumer.consume())
     printer_task = asyncio.create_task(Printer.print(text_queue=text_queue))
 
     loop.add_signal_handler(signal.SIGUSR1, controller.toggle_recording)
