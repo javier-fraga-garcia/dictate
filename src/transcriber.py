@@ -1,4 +1,5 @@
 from faster_whisper import WhisperModel
+import numpy as np
 
 
 class Transcriber:
@@ -7,7 +8,7 @@ class Transcriber:
     ):
         self.model = WhisperModel(model_size, device, compute_type=compute_type)
 
-    def transcribe(self, audio: any) -> str:
+    def transcribe(self, audio: np.typing.NDArray) -> str:
         segments, _ = self.model.transcribe(audio)
 
         return " ".join([segment.text for segment in segments]).strip()

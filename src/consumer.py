@@ -26,5 +26,7 @@ class Consumer:
                 self.audio_queue.task_done()
                 chunks.append(chunk)
             audio_array = np.concatenate(chunks).squeeze()
-            transcription = self.transcriber.transcribe(audio_array)
+            transcription = await asyncio.to_thread(
+                self.transcriber.transcribe, audio_array
+            )
             await self.text_queue.put(transcription)
